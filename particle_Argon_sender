@@ -1,0 +1,21 @@
+// Publisher Code
+void setup() {
+    Serial.begin(9600);
+}
+
+void loop() {
+    // Simulating flex sensor data
+    int flexValue1 = analogRead(A0);
+    int flexValue2 = analogRead(A1);
+    
+
+    // Combine the data into a string
+    String sensorData = String(flexValue1) + "," + String(flexValue2);
+
+    // Publish the sensor data to the Particle cloud
+    Particle.publish("flexSensorData", sensorData, PRIVATE);
+
+    Serial.println("Published: " + sensorData);
+
+    delay(1000);  // Delay to avoid flooding the cloud
+}
