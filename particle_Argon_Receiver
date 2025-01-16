@@ -1,0 +1,32 @@
+#include <LiquidCrystal.h>
+
+// Initialize the LCD pins (adjust pins as per your wiring)
+LiquidCrystal lcd(D7, D6, D5, D4, D3, D2);
+
+void setup() {
+    // Start the LCD
+    lcd.begin(16, 2);
+    lcd.print("Subscriber ready");
+
+    // Start Serial for debugging
+    Serial.begin(9600);
+
+    // Subscribe to the event from the publisher
+    Particle.subscribe("flexSensorData", handleSensorData);
+}
+
+void loop() {
+    // Nothing to do in loop
+}
+
+// Callback function to handle the received data
+void handleSensorData(const char *event, const char *data) {
+    Serial.println("Received: " + String(data));
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor Data:");
+
+    lcd.setCursor(0, 1);
+    lcd.print(data);
+}
