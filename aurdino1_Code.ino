@@ -19,6 +19,5 @@ void loop() {
   } else {
     Serial.println("NO RESPONSE");
   }
-
   delay(500);  // Delay for stability
 }
