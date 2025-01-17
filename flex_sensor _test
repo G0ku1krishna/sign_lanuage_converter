@@ -1,0 +1,37 @@
+// Pin assignments for the 5 sensors
+int sensorPins[5] = {A0, A1, A2, A3, A4};
+
+// store the previous values
+int prevValues[5] = {0, 0, 0, 0, 0};
+
+String responses[5] = {
+    "Sensor 1 Response",
+    "Sensor 2 Response",
+    "Sensor 3 Response",
+    "Sensor 4 Response",
+    "Sensor 5 Response"
+};
+
+void setup() {
+    // Initialize the serial monitor
+    Serial.begin(9600);
+}
+
+void loop() {
+    // Loop through each sensor
+    for (int i = 0; i < 5; i++) {
+        // Read the current sensor value
+        int currentValue = analogRead(sensorPins[i]);
+
+        // Check if the difference exceeds 100
+        if (abs(currentValue - prevValues[i]) > 100) {
+            Serial.println(responses[i]);
+        }
+
+        // Update the previous value
+        prevValues[i] = currentValue;
+    }
+
+    // Delay to avoid spamming the serial monitor
+    delay(500);
+}
