@@ -4,17 +4,22 @@ void setup() {
 }
 
 void loop() {
-    // Simulating flex sensor data
+    // Reading flex sensor values from analog pins
     int flexValue1 = analogRead(A0);
     int flexValue2 = analogRead(A1);
-    
+    int flexValue3 = analogRead(A2);
+    int flexValue4 = analogRead(A3);
+    int flexValue5 = analogRead(A4);
 
-    // Combine the data into a string
-    String sensorData = String(flexValue1) + "," + String(flexValue2);
+    // Combine the data into a comma-separated string
+    String sensorData = String(flexValue1) + "," + String(flexValue2) + "," + 
+                        String(flexValue3) + "," + String(flexValue4) + "," + 
+                        String(flexValue5);
 
     // Publish the sensor data to the Particle cloud
     Particle.publish("flexSensorData", sensorData, PRIVATE);
 
+    // Print the data to the Serial Monitor
     Serial.println("Published: " + sensorData);
 
     delay(1000);  // Delay to avoid flooding the cloud
