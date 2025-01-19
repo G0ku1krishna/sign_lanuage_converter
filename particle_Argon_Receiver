@@ -1,5 +1,17 @@
-// Array to temporarily store the current sensor values received
+// Array to store the current sensor values received
 int sensorValues[5] = {0};
+
+// Array to store the previous sensor values
+int prevValues[5] = {0};
+
+// Responses for each sensor
+String responses[5] = {
+    "Sensor 1 Response",
+    "Sensor 2 Response",
+    "Sensor 3 Response",
+    "Sensor 4 Response",
+    "Sensor 5 Response"
+};
 
 void setup() {
     // Initialize the serial monitor
@@ -18,21 +30,20 @@ void loop() {
 
 // Function to handle and process received sensor data
 void handleSensorData(const char *event, const char *data) {
-    // Print the received raw data for debugging
-    Serial.println("Received data: " + String(data));
-
     // Parse the received string and convert it to integer values
     sscanf(data, "%d,%d,%d,%d,%d", &sensorValues[0], &sensorValues[1], &sensorValues[2], &sensorValues[3], &sensorValues[4]);
 
-    // Print the individual sensor values
+    // Check the difference and print the response if the threshold is exceeded
     for (int i = 0; i < 5; i++) {
-        Serial.print("Sensor ");
-        Serial.print(i + 1);
-        Serial.print(": ");
-        Serial.println(sensorValues[i]);
+        if (abs(sensorValues[i] - prevValues[i]) > 100) {
+            Serial.print("Sensor ");
+            Serial.print(i + 1);
+            Serial.print(": ");
+            Serial.println(responses[i]);
 
-        // Clear the value after printing
-        sensorValues[i] = 0;
+            // Update the previous value
+            prevValues[i] = sensorValues[i];
+        }
     }
 
     // Add a line break for clarity
