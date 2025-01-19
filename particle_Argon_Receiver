@@ -1,48 +1,40 @@
-// Array to store the previous values
-int prevValues[5] = {0, 0, 0, 0, 0};
-
-// Responses for each sensor
-String responses[5] = {
-    "Sensor 1 Response",
-    "Sensor 2 Response",
-    "Sensor 3 Response",
-    "Sensor 4 Response",
-    "Sensor 5 Response"
-};
-
-// Array to store the current sensor values received
-int currentValues[5] = {0};
+// Array to temporarily store the current sensor values received
+int sensorValues[5] = {0};
 
 void setup() {
     // Initialize the serial monitor
     Serial.begin(9600);
+
+    // Print a startup message
+    Serial.println("Waiting for sensor data...");
 
     // Subscribe to the published data
     Particle.subscribe("flexSensorData", handleSensorData, MY_DEVICES);
 }
 
 void loop() {
-    // Loop through each sensor
-    for (int i = 0; i < 5; i++) {
-        // Check if the difference exceeds 100
-        if (abs(currentValues[i] - prevValues[i]) > 200) {
-            // Print the corresponding response
-            Serial.println(responses[i]);
-        }
-
-        // Update the previous value
-        prevValues[i] = currentValues[i];
-    }
-
-    // Delay to avoid spamming the serial monitor
-    delay(500);
+    // The loop remains empty because data is processed in the subscription callback
 }
 
 // Function to handle and process received sensor data
 void handleSensorData(const char *event, const char *data) {
-    // Print the received data for debugging
-    //Serial.println("Received data: " + String(data));
+    // Print the received raw data for debugging
+    Serial.println("Received data: " + String(data));
 
     // Parse the received string and convert it to integer values
-    sscanf(data, "%d,%d,%d,%d,%d", &currentValues[0], &currentValues[1], &currentValues[2], &currentValues[3], &currentValues[4]);
+    sscanf(data, "%d,%d,%d,%d,%d", &sensorValues[0], &sensorValues[1], &sensorValues[2], &sensorValues[3], &sensorValues[4]);
+
+    // Print the individual sensor values
+    for (int i = 0; i < 5; i++) {
+        Serial.print("Sensor ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(sensorValues[i]);
+
+        // Clear the value after printing
+        sensorValues[i] = 0;
+    }
+
+    // Add a line break for clarity
+    Serial.println("---------------------");
 }
