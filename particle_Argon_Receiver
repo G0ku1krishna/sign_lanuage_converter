@@ -1,23 +1,38 @@
-// Array to store the current sensor values received
-int sensorValues[5] = {0};
+#include <LiquidCrystal.h>
 
-// Array to store the previous sensor values
+// Initialize the LCD (RS, EN, D4, D5, D6, D7)
+LiquidCrystal lcd(D5, D4, D3, D2, D6, D7);
+
+// Arrays to store the current and previous sensor values
+int sensorValues[5] = {0};
 int prevValues[5] = {0};
 
 // Responses for each sensor
-String responses[5] = {
-    "Sensor 1 Response",
-    "Sensor 2 Response",
-    "Sensor 3 Response",
-    "Sensor 4 Response",
-    "Sensor 5 Response"
+String responses[5] = {  
+    "WATCH TV",
+    "UNCOMFORTABLE",
+    "FOOD",
+    "WASHROOM",
+    "WATER"
 };
 
 void setup() {
+    // Initialize the LCD with 16 columns and 2 rows
+    lcd.begin(16, 2);
+    lcd.clear();
+
+    // Display a startup message
+    lcd.setCursor(0, 0);
+    lcd.print("Flex Sensors:");
+    delay(2000);
+
+    // Prepare the display for live data
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Waiting for data");
+
     // Initialize the serial monitor
     Serial.begin(9600);
-
-    // Print a startup message
     Serial.println("Waiting for sensor data...");
 
     // Subscribe to the published data
@@ -25,7 +40,7 @@ void setup() {
 }
 
 void loop() {
-    // The loop remains empty because data is processed in the subscription callback
+    // No processing in the loop; data is handled in the subscription callback
 }
 
 // Function to handle and process received sensor data
@@ -33,9 +48,20 @@ void handleSensorData(const char *event, const char *data) {
     // Parse the received string and convert it to integer values
     sscanf(data, "%d,%d,%d,%d,%d", &sensorValues[0], &sensorValues[1], &sensorValues[2], &sensorValues[3], &sensorValues[4]);
 
-    // Check the difference and print the response if the threshold is exceeded
+    // Check the difference and display the response if the threshold is exceeded
     for (int i = 0; i < 5; i++) {
         if (abs(sensorValues[i] - prevValues[i]) > 100) {
+            // Update the LCD display for the specific sensor
+            lcd.setCursor(0, 0); // Clear only the first row
+            lcd.print("Sensor ");
+            lcd.print(i + 1);
+            lcd.print("       "); // Overwrite extra characters if any
+
+            lcd.setCursor(0, 1); // Clear only the second row
+            lcd.print(responses[i]);
+            lcd.print("       "); // Overwrite extra characters if any
+
+            // Print the response to the serial monitor
             Serial.print("Sensor ");
             Serial.print(i + 1);
             Serial.print(": ");
@@ -43,9 +69,18 @@ void handleSensorData(const char *event, const char *data) {
 
             // Update the previous value
             prevValues[i] = sensorValues[i];
+
+            // Delay to display the response for a short duration
+            delay(2000);
+
+            // Reset the display to "Waiting for data"
+            lcd.setCursor(0, 0);
+            lcd.print("Waiting for data");
+            lcd.setCursor(0, 1);
+            lcd.print("                "); // Clear the second row
         }
     }
 
-    // Add a line break for clarity
+    // Add a line break for clarity in the serial monitor
     Serial.println("---------------------");
 }
